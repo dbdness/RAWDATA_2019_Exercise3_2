@@ -1,10 +1,14 @@
-let posts;
+let viewModel;
+let dataService;
+let knockout;
 
 define(["knockout", "dataService"], function (ko, ds) {
-    
+    knockout = ko;
+    dataService = ds;
     viewModel = ko.observable({});
-    
-    ds.getPostsWithJQuery(resp => {
+    let hasPrev = ko.observable(hasPrevFunc());
+
+    ds.getPostsWithJQuery("api/posts", null, resp => {
         console.log(resp);
         viewModel({
             total: ko.observable(resp.total),
@@ -14,9 +18,39 @@ define(["knockout", "dataService"], function (ko, ds) {
             items: ko.observable(resp.items)
         })
     });
-    
-    return viewModel;
+
+    let next = () => {
+        ds.getPostsWithJQuery(viewModel().next(), null, resp => {
+                viewModel({
+                    prev: ko.observable(resp.prev),
+                    next: ko.observable(resp.next),
+                    items: ko.observable(resp.items),
+                });
+                hasPrev = hasPrevFunc();
+            }
+        );
+    };
+
+    let prev = () => {
+        ds.getPostsWithJQuery(viewModel().prev(), null, resp => {
+            viewModel({
+                prev: ko.observable(resp.prev),
+                next: ko.observable(resp.next),
+                items: ko.observable(resp.items),
+            });
+            hasPrev = hasPrevFunc();
+        });
+    };
+
+    return {
+        viewModel,
+        next,
+        prev,
+        hasPrev
+    };
 });
 
-
+function hasPrevFunc() {
+    return viewModel().hasOwnProperty("prev") && viewModel().prev();
+}
 

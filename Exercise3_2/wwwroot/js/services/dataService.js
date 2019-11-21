@@ -1,10 +1,10 @@
 define(["jquery"], function ($) {
-    let getPostsWithJQuery = function (callback) {
-        $.getJSON("api/posts", callback);
+    let getPostsWithJQuery = function (url, queries, callback) {
+        $.getJSON(url, queries, callback);
     };
 
     let getPostsWithFetch = function (callback) {
-        fetch("api/posts")
+        fetch("api/posts/")
             .then(function (response) {
                 return response.json();
             })
