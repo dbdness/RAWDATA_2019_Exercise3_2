@@ -1,22 +1,21 @@
 let viewModel;
-let dataService;
-let knockout;
 
 define(["knockout", "dataService"], function (ko, ds) {
-    knockout = ko;
-    dataService = ds;
     viewModel = ko.observable({});
+    let totalPosts = ko.observable();
     let hasPrev = ko.observable(hasPrevFunc());
+    let hasNext = ko.observable(hasNextFunc());
 
     ds.getPostsWithJQuery("api/posts", null, resp => {
-        console.log(resp);
+        totalPosts(resp.total);
         viewModel({
-            total: ko.observable(resp.total),
             prev: ko.observable(resp.prev),
             pages: ko.observable(resp.pages),
             next: ko.observable(resp.next),
             items: ko.observable(resp.items)
-        })
+        });
+        hasPrev(hasPrevFunc());
+        hasNext(hasNextFunc());
     });
 
     let next = () => {
@@ -26,7 +25,8 @@ define(["knockout", "dataService"], function (ko, ds) {
                     next: ko.observable(resp.next),
                     items: ko.observable(resp.items),
                 });
-                hasPrev = hasPrevFunc();
+                hasPrev(hasPrevFunc());
+                hasNext(hasNextFunc());
             }
         );
     };
@@ -38,19 +38,26 @@ define(["knockout", "dataService"], function (ko, ds) {
                 next: ko.observable(resp.next),
                 items: ko.observable(resp.items),
             });
-            hasPrev = hasPrevFunc();
+            hasPrev(hasPrevFunc());
+            hasNext(hasNextFunc());
         });
     };
 
     return {
+        totalPosts,
         viewModel,
         next,
         prev,
-        hasPrev
+        hasPrev,
+        hasNext
     };
 });
 
 function hasPrevFunc() {
     return viewModel().hasOwnProperty("prev") && viewModel().prev();
+}
+
+function hasNextFunc() {
+    return viewModel().hasOwnProperty("next") && viewModel().next();
 }
 

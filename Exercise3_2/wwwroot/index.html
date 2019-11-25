@@ -7,7 +7,7 @@
 <body>
 <h1>Posts</h1>
 <b>Total posts</b>
-<div data-bind="text: viewModel().total"></div>
+<div data-bind="text: totalPosts"></div>
 <ul data-bind="foreach: viewModel().items">
 <li>
     <span data-bind="text: $data.title"></span>
@@ -16,7 +16,7 @@
 </li>    
 </ul>
 <button data-bind="click: prev, enable: hasPrev">Prev</button>
-<button data-bind="click: next">Next</button>
+<button data-bind="click: next, enable: hasNext">Next</button>
 <script data-main="js/main.js" src="lib/requirejs/require.js"></script>
 </body>
 </html>
