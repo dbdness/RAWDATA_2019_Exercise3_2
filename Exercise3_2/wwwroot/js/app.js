@@ -3,8 +3,12 @@ let viewModel;
 define(["knockout", "dataService"], function (ko, ds) {
     viewModel = ko.observable({});
     let totalPosts = ko.observable();
-    let hasPrev = ko.observable(hasPrevFunc());
-    let hasNext = ko.observable(hasNextFunc());
+    let hasPrev = ko.computed(() => {
+        return viewModel().hasOwnProperty("prev") && viewModel().prev();
+    });
+    let hasNext = ko.computed(() => {
+        return viewModel().hasOwnProperty("next") && viewModel().next();
+    });
 
     ds.getPostsWithJQuery("api/posts", null, resp => {
         totalPosts(resp.total);
@@ -12,10 +16,8 @@ define(["knockout", "dataService"], function (ko, ds) {
             prev: ko.observable(resp.prev),
             pages: ko.observable(resp.pages),
             next: ko.observable(resp.next),
-            items: ko.observable(resp.items)
+            items: ko.observableArray(resp.items)
         });
-        hasPrev(hasPrevFunc());
-        hasNext(hasNextFunc());
     });
 
     let next = () => {
@@ -23,10 +25,8 @@ define(["knockout", "dataService"], function (ko, ds) {
                 viewModel({
                     prev: ko.observable(resp.prev),
                     next: ko.observable(resp.next),
-                    items: ko.observable(resp.items),
+                    items: ko.observableArray(resp.items),
                 });
-                hasPrev(hasPrevFunc());
-                hasNext(hasNextFunc());
             }
         );
     };
@@ -36,10 +36,8 @@ define(["knockout", "dataService"], function (ko, ds) {
             viewModel({
                 prev: ko.observable(resp.prev),
                 next: ko.observable(resp.next),
-                items: ko.observable(resp.items),
+                items: ko.observableArray(resp.items),
             });
-            hasPrev(hasPrevFunc());
-            hasNext(hasNextFunc());
         });
     };
 
@@ -52,12 +50,4 @@ define(["knockout", "dataService"], function (ko, ds) {
         hasNext
     };
 });
-
-function hasPrevFunc() {
-    return viewModel().hasOwnProperty("prev") && viewModel().prev();
-}
-
-function hasNextFunc() {
-    return viewModel().hasOwnProperty("next") && viewModel().next();
-}
 
